@@ -10,6 +10,7 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import io.github.bonigarcia.wdm.WebDriverManager;
+import junit.framework.Assert;
 
 public class FlipkartAddProductToCart {
 
@@ -21,7 +22,7 @@ public class FlipkartAddProductToCart {
 		driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(10));
 		WebElement searchBox = driver.findElement(By.xpath("//input[@title='Search for Products, Brands and More']"));
 		// Flow
-		searchBox.sendKeys("Television");
+		searchBox.sendKeys("Laptop");// any product name can be given
 		searchBox.sendKeys(Keys.ENTER);
 		List<WebElement> ListOfProducts = driver.findElements(By.xpath("//div[@class='KzDlHZ']"));
 		int size = ListOfProducts.size();
@@ -34,6 +35,9 @@ public class FlipkartAddProductToCart {
 		// Other way
 		// ListOfProducts.get(0).click();
 		// To click last product always
+		String ProductName = ListOfProducts.get(size - 1).getText();
+		String arr[] = ProductName.split("-");
+		String actualProductName = arr[0];
 		ListOfProducts.get(size - 1).click();
 		// To click nth Product
 		// ListOfProducts.get(3).click();
@@ -48,8 +52,27 @@ public class FlipkartAddProductToCart {
 				driver.switchTo().window(OtherWindow);
 			}
 		}
+		String ProductPrice = null;
+		// Used for handling stale element exception which comes due to following
+		// reasons:-
+		// -DOM is updated
+		// -Location of element is changed
+		// -Page is refreshed
+		try {
+			ProductPrice = driver.findElement(By.xpath("//div[@class='Nx9bqj CxhGGd']")).getText();
+		} catch (Exception e) {
+			driver.navigate().refresh();
+			ProductPrice = driver.findElement(By.xpath("//div[@class='Nx9bqj CxhGGd']")).getText();
+		}
 		WebElement AddToCartButton = driver.findElement(By.xpath("//button[@class='QqFHMw vslbG+ In9uk2']"));
 		AddToCartButton.click();
+		WebElement ProductInCart = driver.findElement(By.xpath("//div[@class='gE4Hlh']"));
+		WebElement PriceOfProductInCart = driver.findElement(By.xpath("//span[@class='LAlF6k re6bBo']"));
+		String AddedProduct = ProductInCart.getText();
+		String arr2[] = ProductName.split("-");
+		String actualAddedProduct = arr2[0];
+		Assert.assertEquals(actualAddedProduct, actualProductName);
+		Assert.assertEquals(PriceOfProductInCart.getText(), ProductPrice);
 		driver.quit();
 	}
 }
