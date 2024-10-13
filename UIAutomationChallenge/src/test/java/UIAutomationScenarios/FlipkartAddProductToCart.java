@@ -13,7 +13,7 @@ import io.github.bonigarcia.wdm.WebDriverManager;
 import junit.framework.Assert;
 
 public class FlipkartAddProductToCart {
-
+//Add product to cart-First product always/Last product always/Nth Product always
 	public static void main(String[] args) {
 		WebDriverManager.chromedriver().setup();
 		WebDriver driver = new ChromeDriver();
